@@ -1,12 +1,10 @@
 #![no_std]
 
-use crate::config::Config;
 use crate::register_address::{
     ConfigBitFlags, Register, RssiBitFlag, StatusBitFlag, TuningBitFlag, VolumeBitFlag,
 };
 use embedded_hal::i2c;
 
-mod config;
 mod register_address;
 
 #[derive(Debug)]
@@ -26,7 +24,6 @@ const DEVICE_ID: u16 = 0x5804;
 pub struct Rda5708m<I2C> {
     pub(crate) i2c: I2C,
     pub(crate) address: u8,
-    pub(crate) config: Config,
 }
 
 impl<I2C, E> Rda5708m<I2C>
@@ -35,11 +32,7 @@ where
 {
     pub fn new<A: Into<Address>>(i2c: I2C, address: A) -> Self {
         let a = address.into();
-        Rda5708m {
-            i2c,
-            address: a.0,
-            config: Config::default(),
-        }
+        Rda5708m { i2c, address: a.0 }
     }
 
     fn write_register(&mut self, register: u8, data: u16) -> Result<(), Error<E>> {
@@ -87,9 +80,16 @@ where
 
     // Start the device
     pub fn start(&mut self) -> Result<(), Error<E>> {
-        let config = self.config;
-        self.write_register(Register::RDA5807M_REG_CONFIG, config.config)?;
-        self.write_register(Register::RDA5807M_REG_TUNING, config.tuning)
+        let config = ConfigBitFlags::DHIZ
+            | ConfigBitFlags::DMUTE
+            | ConfigBitFlags::BASS
+            | ConfigBitFlags::SEEKUP
+            | ConfigBitFlags::RDS
+            | ConfigBitFlags::NEW
+            | ConfigBitFlags::ENABLE;
+        let tuning = TuningBitFlag::BAND_87_108_MHZ | TuningBitFlag::SPACE_100_KHZ;
+        self.write_register(Register::RDA5807M_REG_CONFIG, config)?;
+        self.write_register(Register::RDA5807M_REG_TUNING, tuning)
     }
 
     // Stop the device
