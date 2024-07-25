@@ -58,6 +58,33 @@ impl ConfigBitFlags {
     pub const ENABLE: u16 = 1;
 }
 
+pub struct TuningBitFlag;
+
+impl TuningBitFlag {
+    /// 调谐。0：禁用，1：启用
+    pub const TUNE: u16 = 1 << 4;
+    /// 波段
+    pub const BAND_MASK: u16 = 0b0000_0000_0000_1100;
+    /// 00: 87-108MHz(Us/Europe)
+    pub const BAND_87_108_MHZ: u16 = 0b0000_0000_0000_0000;
+    /// 01: 76-91MHz(Japan)
+    pub const BAND_76_91_MHZ: u16 = 0b0000_0000_0000_0100;
+    /// 10: 76-108MHz(world wide)
+    pub const BAND_76_108_MHZ: u16 = 0b0000_0000_0000_1000;
+    /// 11: 65-76MHz(East Europe) or 50-65MHz
+    pub const BAND_65_76_MHZ: u16 = 0b0000_0000_0000_1100;
+    /// 频率间隔
+    pub const SPACE_MASK: u16 = 0b0000_0000_0000_0011;
+    /// 00: 100kHz
+    pub const SPACE_100_KHZ: u16 = 0b0000_0000_0000_0000;
+    /// 01: 200kHz
+    pub const SPACE_200_KHZ: u16 = 0b0000_0000_0000_0001;
+    /// 10: 50kHz
+    pub const SPACE_50_KHZ: u16 = 0b0000_0000_0000_0010;
+    /// 11: 25kHz
+    pub const SPACE_25_KHZ: u16 = 0b0000_0000_0000_0011;
+}
+
 pub fn new(expectations: &[I2cTransaction]) -> Rda5708m<I2cMock> {
     let i2c = I2cMock::new(expectations);
     Rda5708m::new(i2c, Address::default())

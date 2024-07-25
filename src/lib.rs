@@ -53,7 +53,7 @@ where
                             &[register],
                             &mut data)
             .map_err(Error::I2C)?;
-        Ok((data[0] << 8) as u16 | data[1] as u16)
+        Ok(((data[0] as u16) << 8) | data[1] as u16)
     }
 
     fn update_register(&mut self, register: u8, mask: u16, new_value: u16) -> Result<(), Error<E>> {

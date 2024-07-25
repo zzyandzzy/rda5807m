@@ -1,4 +1,4 @@
-use crate::register_address::ConfigBitFlags;
+use crate::register_address::{ConfigBitFlags, TuningBitFlag};
 
 
 #[derive(Debug, Clone, Copy)]
@@ -12,7 +12,7 @@ impl Default for Config {
         Config {
             config: ConfigBitFlags::DHIZ | ConfigBitFlags::DMUTE | ConfigBitFlags::BASS |
                 ConfigBitFlags::SEEKUP | ConfigBitFlags::RDS | ConfigBitFlags::NEW | ConfigBitFlags::ENABLE,
-            tuning: 0,
+            tuning: TuningBitFlag::BAND_76_108_MHZ,
         }
     }
 }
