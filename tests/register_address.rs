@@ -94,7 +94,7 @@ impl TuningBitFlag {
     // is set high. The STC bit is set high when the
     // tune operation completes.
     // The tune bit is reset to low automatically when
-    // the tune operation completes.
+    // the tune operation completes..
     pub const TUNE: u16 = 1 << 4;
     // 波段
     pub const BAND_MASK: u16 = 0b0000_0000_0000_1100;

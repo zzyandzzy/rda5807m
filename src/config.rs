@@ -1,6 +1,5 @@
 use crate::register_address::{ConfigBitFlags, TuningBitFlag};
 
-
 #[derive(Debug, Clone, Copy)]
 pub struct Config {
     pub config: u16,
@@ -10,9 +9,14 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Config {
-            config: ConfigBitFlags::DHIZ | ConfigBitFlags::DMUTE | ConfigBitFlags::BASS |
-                ConfigBitFlags::SEEKUP | ConfigBitFlags::RDS | ConfigBitFlags::NEW | ConfigBitFlags::ENABLE,
-            tuning: TuningBitFlag::BAND_76_108_MHZ,
+            config: ConfigBitFlags::DHIZ
+                | ConfigBitFlags::DMUTE
+                | ConfigBitFlags::BASS
+                | ConfigBitFlags::SEEKUP
+                | ConfigBitFlags::RDS
+                | ConfigBitFlags::NEW
+                | ConfigBitFlags::ENABLE,
+            tuning: TuningBitFlag::BAND_87_108_MHZ | TuningBitFlag::SPACE_100_KHZ,
         }
     }
 }
