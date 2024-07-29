@@ -3,7 +3,7 @@ mod register_address;
 
 use crate::commons::{destroy, new, DEVICE_BASE_RANDOM_ADDRESS};
 use crate::register_address::{ConfigBitFlags, Register, TuningBitFlag};
-use embedded_hal_mock::eh1::i2c::Transaction as I2cTransaction;
+use embedded_hal_mock::eh0::i2c::Transaction as I2cTransaction;
 
 #[test]
 fn can_start() {

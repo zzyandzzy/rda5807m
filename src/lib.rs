@@ -3,7 +3,6 @@
 use crate::register_address::{
     ConfigBitFlags, Register, RssiBitFlag, StatusBitFlag, TuningBitFlag, VolumeBitFlag,
 };
-use embedded_hal::i2c;
 
 mod register_address;
 
@@ -28,7 +27,9 @@ pub struct Rda5708m<I2C> {
 
 impl<I2C, E> Rda5708m<I2C>
 where
-    I2C: i2c::I2c<Error = E>,
+    I2C: embedded_hal::blocking::i2c::Write<Error = E>
+        + embedded_hal::blocking::i2c::Read<Error = E>
+        + embedded_hal::blocking::i2c::WriteRead<Error = E>,
 {
     pub fn new<A: Into<Address>>(i2c: I2C, address: A) -> Self {
         let a = address.into();
