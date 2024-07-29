@@ -227,6 +227,12 @@ where
         let new_mask_value = ((chan as u16) << TuningBitFlag::CHAN_SHIFT) | TuningBitFlag::TUNE;
         self.update_register_by_old(Register::RDA5807M_REG_TUNING, config, mask, new_mask_value)
     }
+
+    pub fn stc_status(&mut self) -> Result<bool, Error<E>> {
+        let status = self.read_register(Register::RDA5807M_REG_STATUS)?;
+        let stc = (status & StatusBitFlag::STC) != 0;
+        Ok(stc)
+    }
 }
 
 // I2C device address
