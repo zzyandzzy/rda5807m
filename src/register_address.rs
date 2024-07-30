@@ -87,7 +87,7 @@ impl TuningBitFlag {
     // Frequency =
     // Channel Spacing (kHz) x CHAN + 65.0 MHz
     // CHAN is updated after a seek operation.
-    pub const CHAN_MASK: u16 = 0b1111_1111_1000_0000;
+    pub const CHAN_MASK: u16 = 0b1111_1111_1100_0000;
     pub const CHAN_SHIFT: u8 = 6;
     // 调谐。0：禁用，1：启用
     // The tune operation begins when the TUNE bit

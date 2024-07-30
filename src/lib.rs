@@ -143,12 +143,14 @@ where
     }
 
     // volume up
-    pub fn volume_up(&mut self) -> Result<(), Error<E>> {
+    pub fn volume_up(&mut self, wrap: bool) -> Result<(), Error<E>> {
         let config = self.read_register(Register::RDA5807M_REG_VOLUME)?;
         let volume = config & VolumeBitFlag::VOLUME_MASK;
-        let mut volume = volume + 1;
-        if volume > 15 {
-            volume = 15;
+        if !wrap {
+            let mut volume = volume + 1;
+            if volume > 15 {
+                volume = 15;
+            }
         }
         self.update_register_by_old(
             Register::RDA5807M_REG_VOLUME,
@@ -159,12 +161,14 @@ where
     }
 
     // volume down
-    pub fn volume_down(&mut self) -> Result<(), Error<E>> {
+    pub fn volume_down(&mut self, wrap: bool) -> Result<(), Error<E>> {
         let config = self.read_register(Register::RDA5807M_REG_VOLUME)?;
         let volume = config & VolumeBitFlag::VOLUME_MASK;
-        let mut volume = volume - 1;
-        if volume > 15 {
-            volume = 0;
+        if !wrap {
+            let mut volume = volume - 1;
+            if volume > 15 {
+                volume = 0;
+            }
         }
         self.update_register_by_old(
             Register::RDA5807M_REG_VOLUME,
@@ -197,7 +201,7 @@ where
         Ok(((rssi & RssiBitFlag::RSSI_MASK) >> RssiBitFlag::RSSI_SHIFT) as u8)
     }
 
-    fn get_band_and_spacing(&mut self) -> Result<(u8, u8, u16), Error<E>> {
+    pub fn get_band_and_spacing(&mut self) -> Result<(u8, u8, u16), Error<E>> {
         let config = self.read_register(Register::RDA5807M_REG_TUNING)?;
         let band = (config & TuningBitFlag::BAND_MASK) >> TuningBitFlag::BAND_SHIFT;
         let spacing = config & TuningBitFlag::SPACE_MASK;
