@@ -2,7 +2,7 @@
 
 use crate::register_address::{
     ConfigBitFlags, Register, RssiBitFlag, StatusBitFlag, StatusRegister, TuningBitFlag,
-    VolumeBitFlag,
+    VolumeBitFlag, VolumeRegister,
 };
 
 mod register_address;
@@ -117,6 +117,11 @@ where
         )
     }
 
+    pub fn get_volume(&mut self) -> Result<VolumeRegister, Error<E>> {
+        let config = self.read_register(Register::RDA5807M_REG_VOLUME)?;
+        Ok(VolumeRegister::from_u16(config))
+    }
+
     // set device mute
     pub fn mute(&mut self, mute: bool) -> Result<(), Error<E>> {
         self.update_register(
@@ -131,8 +136,8 @@ where
     pub fn set_seek_threshold(&mut self, threshold: u8) -> Result<(), Error<E>> {
         self.update_register(
             Register::RDA5807M_REG_VOLUME,
-            VolumeBitFlag::SEEKTH_MASK,
-            (threshold as u16) << VolumeBitFlag::SEEKTH_SHIFT,
+            VolumeBitFlag::SEEK_TH_MASK,
+            (threshold as u16) << VolumeBitFlag::SEEK_TH_SHIFT,
         )
     }
 

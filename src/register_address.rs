@@ -122,24 +122,97 @@ impl TuningBitFlag {
 pub struct VolumeBitFlag;
 
 impl VolumeBitFlag {
+    // If 0, generate 5ms interrupt;
+    // If 1, interrupt last until read reg0CH action
+    // occurs.
+    pub const INT_MODE: u16 = 1 << 15;
+    // Default value is 00; When = 10, will add the
+    // RSSI seek mode.
+    pub const SEEK_MODE_MASK: u16 = 0b0110_0000_0000_0000;
+    pub const SEEK_MODE_SHIFT: u8 = 13;
+    pub const RSVD: u16 = 1 << 12;
     // Seek SNR threshold value
-    pub const SEEKTH_MASK: u16 = 0b0000_1111_0000_0000;
-    pub const SEEKTH_SHIFT: u8 = 8;
-    // 音量Mask
+    pub const SEEK_TH_MASK: u16 = 0b0000_1111_0000_0000;
+    pub const SEEK_TH_SHIFT: u8 = 8;
+    // LNA input port selection bit:
+    // 00: no input
+    // 01: LNAN
+    // 10: LNAP
+    // 11: dual port input
+    pub const LNA_PORT_SEL_MASK: u16 = 0b0000_0000_1100_0000;
+    pub const LNA_PORT_SEL_SHIFT: u8 = 6;
+    // Lna working current bit:
+    // 00=1.8mA
+    // 01=2.1mA
+    // 10=2.5mA
+    // 11=3.0mA
+    pub const LNA_ICSEL_BIT_MASK: u16 = 0b0000_0000_0011_0000;
+    pub const LNA_ICSEL_BIT_SHIFT: u8 = 4;
+    // DAC Gain Control Bits (Volume).
+    // 0000=min; 1111=max
     pub const VOLUME_MASK: u16 = 0b0000_0000_0000_1111;
+}
+
+#[derive(Debug, Default)]
+pub struct VolumeRegister {
+    pub int_mode: bool,
+    pub seek_mode: u8,
+    pub rsvd: bool,
+    pub seek_th: u8,
+    pub lna_port_sel: u8,
+    pub lna_icsel: u8,
+    pub volume: u8,
+}
+
+impl VolumeRegister {
+    pub fn from_u16(data: u16) -> Self {
+        VolumeRegister {
+            int_mode: (data & VolumeBitFlag::INT_MODE) != 0,
+            seek_mode: ((data & VolumeBitFlag::SEEK_MODE_MASK) >> VolumeBitFlag::SEEK_MODE_SHIFT)
+                as u8,
+            rsvd: (data & VolumeBitFlag::RSVD) != 0,
+            seek_th: ((data & VolumeBitFlag::SEEK_TH_MASK) >> VolumeBitFlag::SEEK_TH_SHIFT) as u8,
+            lna_port_sel: ((data & VolumeBitFlag::LNA_PORT_SEL_MASK)
+                >> VolumeBitFlag::LNA_PORT_SEL_SHIFT) as u8,
+            lna_icsel: ((data & VolumeBitFlag::LNA_ICSEL_BIT_MASK)
+                >> VolumeBitFlag::LNA_ICSEL_BIT_SHIFT) as u8,
+            volume: (data & VolumeBitFlag::VOLUME_MASK) as u8,
+        }
+    }
 }
 
 pub struct StatusBitFlag;
 
 impl StatusBitFlag {
-    // RDS就绪
+    // RDS ready
+    // 0 = No RDS/RBDS group ready(default)
+    // 1 = New RDS/RBDS group ready
     pub const RDSR: u16 = 1 << 15;
     // 调谐搜索。0: 没有完成，1: 完成
+    // Seek/Tune Complete.
+    // 0 = Not complete
+    // 1 = Complete
+    // The seek/tune complete flag is set when the
+    // seek or tune operation completes.
     pub const STC: u16 = 1 << 14;
     // 搜索状态。0: 搜索成功，1: 搜索失败
+    // Seek Fail.
+    // 0 = Seek successful; 1 = Seek failure
+    // The seek fail flag is set when the seek
+    // operation fails to find a channel with an RSSI
+    // level greater than SEEKTH[3:0].
     pub const SF: u16 = 1 << 13;
+    // RDS Synchronization
+    // 0 = RDS decoder not synchronized(default)
+    // 1 = RDS decoder synchronized
+    // Available only in RDS Verbose mode
     pub const RDDS: u16 = 1 << 12;
+    // When RDS enable:
+    // 1 = Block E has been found
+    // 0 = no Block E has been found
     pub const BLK_E: u16 = 1 << 11;
+    // Stereo Indicator.
+    // 0 = Mono; 1 = Stereo
     pub const ST: u16 = 1 << 10;
     // 信道值
     // 频率计算方法：
@@ -149,7 +222,7 @@ impl StatusBitFlag {
     pub const READ_CHAN_MASK: u16 = 0b0000_0011_1111_1111;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct StatusRegister {
     pub rdsr: bool,
     pub stc: bool,
