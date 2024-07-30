@@ -69,10 +69,11 @@ where
         register: u8,
         old_value: u16,
         mask: u16,
-        new_mask_value: u16,
+        new_value: u16,
     ) -> Result<(), Error<E>> {
-        let data = old_value & !mask | new_mask_value;
-        self.write_register(register, data)
+        // 提取new_value中的对应mask位置的值
+        let new_mask_value = (new_value & mask) | (old_value & !mask);
+        self.write_register(register, new_mask_value)
     }
 
     pub fn check_id(&mut self) -> Result<bool, Error<E>> {
@@ -162,7 +163,7 @@ where
         let config = self.read_register(Register::RDA5807M_REG_VOLUME)?;
         let volume = config & VolumeBitFlag::VOLUME_MASK;
         let mut volume = volume - 1;
-        if volume < 0 {
+        if volume > 15 {
             volume = 0;
         }
         self.update_register_by_old(
