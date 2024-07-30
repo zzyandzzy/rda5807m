@@ -5,7 +5,7 @@ use crate::register_address::{
     VolumeRegister,
 };
 
-mod register_address;
+pub mod register_address;
 
 #[derive(Debug)]
 pub enum Error<E> {
