@@ -138,12 +138,40 @@ impl StatusBitFlag {
     pub const STC: u16 = 1 << 14;
     // 搜索状态。0: 搜索成功，1: 搜索失败
     pub const SF: u16 = 1 << 13;
+    pub const RDDS: u16 = 1 << 12;
+    pub const BLK_E: u16 = 1 << 11;
+    pub const ST: u16 = 1 << 10;
     // 信道值
     // 频率计算方法：
     // 如果BAND=00，Frequency = Channel Spacing(kHz) x READCHAN[9:0] + 87MHz
     // 如果BAND=01 or BAND=10，Frequency = Channel Spacing(kHz) x READCHAN[9:0] + 76MHz
     // 如果BAND=11，Frequency = Channel Spacing(kHz) x READCHAN[9:0] + 65MHz
-    pub const READCHAN_MASK: u16 = 0b0000_0001_1111_1111;
+    pub const READ_CHAN_MASK: u16 = 0b0000_0011_1111_1111;
+}
+
+#[derive(Debug)]
+pub struct StatusRegister {
+    pub rdsr: bool,
+    pub stc: bool,
+    pub sf: bool,
+    pub rdss: bool,
+    pub blk_e: bool,
+    pub st: bool,
+    pub readchan: u16,
+}
+
+impl StatusRegister {
+    pub fn from_u16(data: u16) -> Self {
+        StatusRegister {
+            rdsr: (data & StatusBitFlag::RDSR) != 0,
+            stc: (data & StatusBitFlag::STC) != 0,
+            sf: (data & StatusBitFlag::SF) != 0,
+            rdss: (data & StatusBitFlag::RDDS) != 0,
+            blk_e: (data & StatusBitFlag::BLK_E) != 0,
+            st: (data & StatusBitFlag::ST) != 0,
+            readchan: data & StatusBitFlag::READ_CHAN_MASK,
+        }
+    }
 }
 
 pub struct RssiBitFlag;

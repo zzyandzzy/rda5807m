@@ -1,7 +1,8 @@
 #![no_std]
 
 use crate::register_address::{
-    ConfigBitFlags, Register, RssiBitFlag, StatusBitFlag, TuningBitFlag, VolumeBitFlag,
+    ConfigBitFlags, Register, RssiBitFlag, StatusBitFlag, StatusRegister, TuningBitFlag,
+    VolumeBitFlag,
 };
 
 mod register_address;
@@ -85,16 +86,12 @@ where
             | ConfigBitFlags::DMUTE
             | ConfigBitFlags::BASS
             | ConfigBitFlags::SEEKUP
-            | ConfigBitFlags::SEEK
             | ConfigBitFlags::RDS
             | ConfigBitFlags::NEW
             | ConfigBitFlags::ENABLE;
+        let tuning = TuningBitFlag::BAND_87_108_MHZ | TuningBitFlag::SPACE_100_KHZ;
         self.write_register(Register::RDA5807M_REG_CONFIG, config)?;
-        self.update_register(
-            Register::RDA5807M_REG_TUNING,
-            TuningBitFlag::BAND_MASK,
-            TuningBitFlag::BAND_87_108_MHZ,
-        )
+        self.write_register(Register::RDA5807M_REG_TUNING, tuning)
     }
 
     // Stop the device
@@ -109,6 +106,10 @@ where
 
     // set device volume
     pub fn set_volume(&mut self, volume: u8) -> Result<(), Error<E>> {
+        let mut volume = volume;
+        if volume > 15 {
+            volume = 15;
+        }
         self.update_register(
             Register::RDA5807M_REG_VOLUME,
             VolumeBitFlag::VOLUME_MASK,
@@ -139,7 +140,10 @@ where
     pub fn volume_up(&mut self) -> Result<(), Error<E>> {
         let config = self.read_register(Register::RDA5807M_REG_VOLUME)?;
         let volume = config & VolumeBitFlag::VOLUME_MASK;
-        let volume = volume + 1;
+        let mut volume = volume + 1;
+        if volume > 15 {
+            volume = 15;
+        }
         self.update_register_by_old(
             Register::RDA5807M_REG_VOLUME,
             config,
@@ -152,7 +156,10 @@ where
     pub fn volume_down(&mut self) -> Result<(), Error<E>> {
         let config = self.read_register(Register::RDA5807M_REG_VOLUME)?;
         let volume = config & VolumeBitFlag::VOLUME_MASK;
-        let volume = volume - 1;
+        let mut volume = volume - 1;
+        if volume < 0 {
+            volume = 0;
+        }
         self.update_register_by_old(
             Register::RDA5807M_REG_VOLUME,
             config,
@@ -200,8 +207,7 @@ where
             0b11 => 25,
             _ => 0,
         };
-        let chan = (self.read_register(Register::RDA5807M_REG_STATUS)?
-            & StatusBitFlag::READCHAN_MASK) as u32;
+        let chan = self.get_status()?.readchan as u32;
         let freq = match band {
             0b00 => 87_000 + spacing * chan,
             0b01 | 0b10 => 76_000 + spacing * chan,
@@ -232,10 +238,9 @@ where
         self.update_register_by_old(Register::RDA5807M_REG_TUNING, config, mask, new_mask_value)
     }
 
-    pub fn stc_status(&mut self) -> Result<bool, Error<E>> {
-        let status = self.read_register(Register::RDA5807M_REG_STATUS)?;
-        let stc = (status & StatusBitFlag::STC) != 0;
-        Ok(stc)
+    pub fn get_status(&mut self) -> Result<StatusRegister, Error<E>> {
+        let status_flag = self.read_register(Register::RDA5807M_REG_STATUS)?;
+        Ok(StatusRegister::from_u16(status_flag))
     }
 }
 
