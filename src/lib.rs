@@ -1,8 +1,8 @@
 #![no_std]
 
 use crate::register_address::{
-    ConfigBitFlags, Register, RssiBitFlag, StatusBitFlag, StatusRegister, TuningBitFlag,
-    VolumeBitFlag, VolumeRegister,
+    ConfigBitFlags, Register, RssiBitFlag, StatusRegister, TuningBitFlag, VolumeBitFlag,
+    VolumeRegister,
 };
 
 mod register_address;
