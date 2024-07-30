@@ -146,8 +146,8 @@ where
     pub fn volume_up(&mut self, wrap: bool) -> Result<(), Error<E>> {
         let config = self.read_register(Register::RDA5807M_REG_VOLUME)?;
         let volume = config & VolumeBitFlag::VOLUME_MASK;
+        let mut volume = volume + 1;
         if !wrap {
-            let mut volume = volume + 1;
             if volume > 15 {
                 volume = 15;
             }
@@ -164,8 +164,8 @@ where
     pub fn volume_down(&mut self, wrap: bool) -> Result<(), Error<E>> {
         let config = self.read_register(Register::RDA5807M_REG_VOLUME)?;
         let volume = config & VolumeBitFlag::VOLUME_MASK;
+        let mut volume = volume - 1;
         if !wrap {
-            let mut volume = volume - 1;
             if volume > 15 {
                 volume = 0;
             }
