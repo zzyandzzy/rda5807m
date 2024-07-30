@@ -64,11 +64,11 @@ impl ConfigBitFlags {
     pub const CLK_384_MHZ: u16 = 0b0000_0000_0111_0000;
 
     // RDS/RBDS启用。0：不启用，1：启用
-    pub const RDS: u16 = 1 << 4;
+    pub const RDS: u16 = 1 << 3;
     // 使用新技术提高信号质量。0：不启用，1：启用
-    pub const NEW: u16 = 1 << 3;
+    pub const NEW: u16 = 1 << 2;
     // 软件复位。0：正常，1：复位
-    pub const RESET: u16 = 1 << 2;
+    pub const RESET: u16 = 1 << 1;
     // 上电启用。0：不启用，1：启用
     pub const ENABLE: u16 = 1;
 }

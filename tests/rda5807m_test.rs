@@ -1,20 +1,16 @@
+use embedded_hal_mock::eh0::i2c::Transaction as I2cTransaction;
+
+use crate::commons::{destroy, new, DEVICE_BASE_RANDOM_ADDRESS};
+use crate::register_address::{Register, TuningBitFlag};
+
 mod commons;
 mod register_address;
 
-use crate::commons::{destroy, new, DEVICE_BASE_RANDOM_ADDRESS};
-use crate::register_address::{ConfigBitFlags, Register, TuningBitFlag};
-use embedded_hal_mock::eh0::i2c::Transaction as I2cTransaction;
-
 #[test]
 fn can_start() {
-    let config_bit = ConfigBitFlags::DHIZ
-        | ConfigBitFlags::DMUTE
-        | ConfigBitFlags::BASS
-        | ConfigBitFlags::SEEKUP
-        | ConfigBitFlags::RDS
-        | ConfigBitFlags::NEW
-        | ConfigBitFlags::ENABLE;
-    let tuning_bit = TuningBitFlag::BAND_87_108_MHZ;
+    let config_bit = 0xd30d;
+    let chan = 0x13f;
+    let tuning_bit = chan << TuningBitFlag::CHAN_SHIFT;
     let expectations = [
         I2cTransaction::write(
             DEVICE_BASE_RANDOM_ADDRESS,
@@ -23,6 +19,11 @@ fn can_start() {
                 (config_bit >> 8) as u8,
                 config_bit as u8,
             ],
+        ),
+        I2cTransaction::write_read(
+            DEVICE_BASE_RANDOM_ADDRESS,
+            vec![Register::RDA5807M_REG_TUNING],
+            vec![(tuning_bit >> 8) as u8, tuning_bit as u8],
         ),
         I2cTransaction::write(
             DEVICE_BASE_RANDOM_ADDRESS,

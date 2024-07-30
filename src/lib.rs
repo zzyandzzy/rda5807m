@@ -85,12 +85,16 @@ where
             | ConfigBitFlags::DMUTE
             | ConfigBitFlags::BASS
             | ConfigBitFlags::SEEKUP
+            | ConfigBitFlags::SEEK
             | ConfigBitFlags::RDS
             | ConfigBitFlags::NEW
             | ConfigBitFlags::ENABLE;
-        let tuning = TuningBitFlag::BAND_87_108_MHZ | TuningBitFlag::SPACE_100_KHZ;
         self.write_register(Register::RDA5807M_REG_CONFIG, config)?;
-        self.write_register(Register::RDA5807M_REG_TUNING, tuning)
+        self.update_register(
+            Register::RDA5807M_REG_TUNING,
+            TuningBitFlag::BAND_MASK,
+            TuningBitFlag::BAND_87_108_MHZ,
+        )
     }
 
     // Stop the device
