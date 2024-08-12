@@ -2,9 +2,27 @@
 name = "rda5807m"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+authors = ["zzyandzzy <zzy.main@gmail.com>"]
+description = "rda5807m driver for Rust"
+documentation = "https://docs.rs/rda5807m"
+repository = "https://github.com/zzyandzzy/rda5807m"
+homepage = "https://github.com/zzyandzzy/rda5807m"
+keywords = ["rda5807m", "driver", "rust", "embedded"]
+categories = ["embedded", "no-std"]
+readme = "README.md"
+include = [
+    "/**/*.rs",
+    "/Cargo.toml",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/LICENSE-MIT",
+    "/LICENSE-APACHE",
+]
 
 [dependencies]
 embedded-hal = "0.2.7"
 
 [dev-dependencies]
+linux-embedded-hal = "0.4"
 embedded-hal-mock = { version = "0.10", default-features = false, features = ["eh0"] }
