@@ -252,6 +252,23 @@ where
         let status_flag = self.read_register(Register::RDA5807M_REG_STATUS)?;
         Ok(StatusRegister::from_u16(status_flag))
     }
+
+    pub fn get_rds_blocks(&mut self) -> Result<[u16; 4], Error<E>> {
+        Ok([
+            self.read_register(Register::RDA5807M_REG_RDSA)?,
+            self.read_register(Register::RDA5807M_REG_RDSB)?,
+            self.read_register(Register::RDA5807M_REG_RDSC)?,
+            self.read_register(Register::RDA5807M_REG_RDSD)?,
+        ])
+    }
+
+    pub fn get_rds_block_errors(&mut self) -> Result<(u8, u8), Error<E>> {
+        let rssi = self.read_register(Register::RDA5807M_REG_RSSI)?;
+        let blera = (rssi & RssiBitFlag::BLOCK_ERROR_A_MASK) >> RssiBitFlag::BLOCK_ERROR_A_SHIFT;
+        let blerb = (rssi & RssiBitFlag::BLOCK_ERROR_B_MASK) >> RssiBitFlag::BLOCK_ERROR_B_SHIFT;
+
+        Ok((blera as u8, blerb as u8))
+    }
 }
 
 // I2C device address
