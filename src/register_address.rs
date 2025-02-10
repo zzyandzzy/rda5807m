@@ -253,4 +253,10 @@ impl RssiBitFlag {
     // 信号强度Mask
     pub const RSSI_MASK: u16 = 0b1111_1110_0000_0000;
     pub const RSSI_SHIFT: u8 = 9;
+
+    // Block error masks
+    pub const BLOCK_ERROR_A_MASK: u16 = 0b0000_0000_0000_1100;
+    pub const BLOCK_ERROR_B_MASK: u16 = 0b0000_0000_0000_0011;
+    pub const BLOCK_ERROR_A_SHIFT: u16 = 2;
+    pub const BLOCK_ERROR_B_SHIFT: u16 = 0;
 }
